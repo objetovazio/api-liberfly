@@ -1,17 +1,24 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Services;
 
-use App\Models\Task;
+use App\Repositories\TaskRepository;
 
-class TaskRepository
+class TaskService
 {
+    protected $taskRepository;
+
+    public function __construct(TaskRepository $taskRepository)
+    {
+        $this->taskRepository = $taskRepository;
+    }
+
     /**
      * Retorna todas as tasks
      */
     public function getAll()
     {
-        return Task::all();
+        return $this->taskRepository->getAll();
     }
 
     /**
@@ -19,7 +26,7 @@ class TaskRepository
      */
     public function create(array $data)
     {
-        $data =Task::create($data); 
+        $data =  $this->taskRepository->create($data);
         return $data;
     }
 
@@ -28,7 +35,7 @@ class TaskRepository
      */
     public function getById(string $id)
     {
-        return Task::findOrFail($id);
+        return $this->taskRepository->getById($id);
     }
 
     /**
@@ -36,7 +43,7 @@ class TaskRepository
      */
     public function getAllByTodoListId($todoListId)
     {
-        return Task::where('todo_list_id', $todoListId)->get();
+        return $this->taskRepository->getAllByTodoListId($todoListId);
     }
 
     /**
@@ -44,9 +51,7 @@ class TaskRepository
      */
     public function update(string $id, array $data)
     {
-        $task = Task::findOrFail($id);
-        $task->update($data);
-        return $task;
+        return $this->taskRepository->update($id, $data);
     }
 
     /**
@@ -54,8 +59,6 @@ class TaskRepository
      */
     public function delete(string $id)
     {
-        $task = Task::findOrFail($id);
-        $task->delete();
-        return $task;
+        return $this->taskRepository->delete($id);
     }
 }

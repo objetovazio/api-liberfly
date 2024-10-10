@@ -53,7 +53,7 @@ class AuthController extends Controller
      *         @OA\Schema(type="string")
      *     ),
      *     @OA\Response(response="201", description="User registered successfully"),
-     *     @OA\Response(response="422", description="Validation errors")
+     *     @OA\Response(response="400", description="Validation errors")
      * )
      */
     public function create(): JsonResponse
@@ -66,12 +66,11 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
+            return ApiResponse::validationError($validator->errors());
         }
 
         // Chama o serviço para criar o usuário
-        $user = $this->authService->register(request()->all());
-        return response()->json($user, 201);
+        $user = $this->authService->create(request()->all());
         return ApiResponse::success($user, 'User registered successfully', 201);
     }
 
@@ -147,7 +146,7 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => JWTAuth::factory()->getTTL() * 60
-        ]);
+        ], "Logged Successfully");
     }
 
     /**

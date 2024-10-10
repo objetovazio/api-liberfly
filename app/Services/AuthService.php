@@ -14,7 +14,7 @@ class AuthService
     }
 
     // Método para criar um novo usuário
-    public function register(array $data)
+    public function create(array $data)
     {
         // Criptografa a senha antes de salvar
         $data['password'] = bcrypt($data['password']);

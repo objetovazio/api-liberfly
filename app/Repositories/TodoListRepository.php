@@ -6,9 +6,9 @@ use App\Models\TodoList;
 
 class TodoListRepository
 {
-    public function all()
+    public function getAllByUserId(int $userId)
     {
-        return TodoList::all();
+        return TodoList::where('user_id', $userId)->get();
     }
 
     public function find($id)
