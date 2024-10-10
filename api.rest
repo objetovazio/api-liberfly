@@ -1,73 +1,90 @@
-@name = John Doe
-@email = johndoe3@example.com
-@password = securepassword123!
-
 ### User Creation
 # @name create_user
 POST http://localhost:8000/api/auth/create
 Content-Type: application/json
 
 {
-    "name": "{{name}}",
-    "email": "{{email}}",
-    "password": "{{password}}",
-    "password_confirmation": "{{password}}"
+    "name": "John Doe",
+    "email": "johndoe4@example.com",
+    "password": "securepassword123!",
+    "password_confirmation": "securepassword123!"
 }
 
 ###
+
 ### Authentication
 # @name auth
 POST http://localhost:8000/api/auth
 Content-Type: application/json
 
 {
-  "email": "{{email}}",
-  "password": "{{password}}"
+  "email": "johndoe4@example.com",
+  "password": "securepassword123!"
 }
 
 ### Load Token
-@token = {{auth.response.body.access_token}}
+@token = {{auth.response.body.data.access_token}}
 
 ###
-### Create a new TodoList
+
+## TodoLists
+### Get All TodoLists
+GET http://localhost:8000/api/todo
+Authorization: Bearer {{token}}
+
+###
+
+### Create a New TodoList
+# @name createTodo
 POST http://localhost:8000/api/todo
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-    "name": "My First Todo List"
+    "name": "Tudo Novo12"
 }
 
 ###
-### Get all TodoLists
-GET http://localhost:8000/api/todo
-Authorization: Bearer {{token}}
 
+### Load TodoList Id
+@todoId = {{createTodo.response.body.data.id}}
+@userId = {{createTodo.response.body.data.user_id}}
 ###
-### Get a specific TodoList
-GET http://localhost:8000/api/todo/1
-Authorization: Bearer {{token}}
 
+### Get a Specific TodoList 
+GET http://localhost:8000/api/todo/{{todoId}}
+Authorization: Bearer {{token}}
 ###
-### Update a specific TodoList
-PUT http://localhost:8000/api/todo/1
+
+### Update a Specific TodoList
+PUT http://localhost:8000/api/todo/{{todoId}}
+Authorization: Bearer {{token}}
 Content-Type: application/json
-Authorization: Bearer {{token}}
 
 {
-    "name": "Updated Todo List Name"
+    "name": "TudoNovo1"
 }
 
 ###
-### Delete a specific TodoList
-DELETE http://localhost:8000/api/todo/1
+
+### Delete a Specific TodoList
+DELETE http://localhost:8000/api/todo/{{todoId}}
 Authorization: Bearer {{token}}
 
 ###
-### Create a new Task in a specific TodoList
-POST http://localhost:8000/api/todo/1/tasks
-Content-Type: application/json
+
+### Get All Tasks from a Specific TodoList
+GET http://localhost:8000/api/todo/{{todoId}}/tasks
 Authorization: Bearer {{token}}
+
+###
+
+## Tasks
+### Create a New Task in a Specific TodoList
+# @name createTask
+POST http://localhost:8000/api/todo/{{todoId}}/tasks
+Authorization: Bearer {{token}}
+Content-Type: application/json
 
 {
     "title": "My First Task",
@@ -75,30 +92,29 @@ Authorization: Bearer {{token}}
 }
 
 ###
-### Get all Tasks from a specific TodoList
-GET http://localhost:8000/api/todo/1/tasks
+
+@taskId = {{createTask.response.body.data.id}}
+
+### Get a Specific Task from a Specific TodoList
+GET http://localhost:8000/api/todo/{{todoId}}/tasks/{{taskId}}
 Authorization: Bearer {{token}}
 
 ###
-### Get a specific Task from a specific TodoList
-GET http://localhost:8000/api/todo/1/tasks/1
-Authorization: Bearer {{token}}
 
-###
-### Update a specific Task in a specific TodoList
-PUT http://localhost:8000/api/todo/1/tasks/1
+### Update a Specific Task in a Specific TodoList
+PUT http://localhost:8000/api/todo/{{todoId}}/tasks/{{taskId}}
+Authorization: Bearer {{token}}
 Content-Type: application/json
-Authorization: Bearer {{token}}
 
 {
     "title": "Updated Task Title",
-    "description": "This is the updated description of my first task."
+    "description": "This is the updated description of my first task.",
+    "completed": true
 }
 
 ###
-### Delete a specific Task from a specific TodoList
-DELETE http://localhost:8000/api/todo/1/tasks/1
-Authorization: Bearer {{token}}
 
+### Delete a Specific Task from a Specific TodoList
+DELETE http://localhost:8000/api/todo/{{todoId}}/tasks/{{taskId}}
+Authorization: Bearer {{token}}
 ###
-GET http://localhost:8000/api/test
