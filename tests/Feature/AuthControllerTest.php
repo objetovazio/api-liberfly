@@ -74,7 +74,15 @@ class AuthControllerTest extends TestCase
         ]);
 
         $response->assertStatus(200)
-            ->assertJsonStructure(['access_token', 'token_type', 'expires_in']);
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'data' => [
+                    'access_token',
+                    'token_type',
+                    'expires_in',
+                ],
+            ]);
 
         // Extraindo o token da resposta
         $token = $response->json('access_token');
@@ -98,7 +106,10 @@ class AuthControllerTest extends TestCase
         ]);
 
         $response->assertStatus(401)
-            ->assertJson(['error' => 'Unauthorized']);
+            ->assertJson([
+                'success' => false,
+                'message' => 'Unauthorized',
+            ]);
     }
 
     public function testUserCanLogout()
@@ -123,7 +134,15 @@ class AuthControllerTest extends TestCase
             ->postJson('/api/auth/refresh');
 
         $response->assertStatus(200)
-            ->assertJsonStructure(['access_token', 'token_type', 'expires_in']);
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'data' => [
+                    'access_token',
+                    'token_type',
+                    'expires_in',
+                ],
+            ]);
     }
 
     public function testGetUserDetails()

@@ -2,13 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\AuthService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
+    protected $authService;
+
+    public function __construct(AuthService $authService)
+    {
+        $this->authService = $authService;
+    }
+
     /**
      * @OA\Post(
      *     path="/api/auth/create",
@@ -46,8 +56,9 @@ class AuthController extends Controller
      *     @OA\Response(response="422", description="Validation errors")
      * )
      */
-    public function create()
+    public function create(): JsonResponse
     {
+        // Validação dos dados
         $validator = Validator::make(request()->all(), [
             'name' => 'required',
             'email' => 'required|email|unique:users',
@@ -58,13 +69,10 @@ class AuthController extends Controller
             return response()->json($validator->errors()->toJson(), 400);
         }
 
-        $user = new User;
-        $user->name = request()->name;
-        $user->email = request()->email;
-        $user->password = bcrypt(request()->password);
-        $user->save();
-
+        // Chama o serviço para criar o usuário
+        $user = $this->authService->register(request()->all());
         return response()->json($user, 201);
+        return ApiResponse::success($user, 'User registered successfully', 201);
     }
 
     /**
@@ -90,12 +98,12 @@ class AuthController extends Controller
      *     @OA\Response(response="401", description="Unauthorized")
      * )
      */
-    public function login()
+    public function login(): JsonResponse
     {
         $credentials = request(['email', 'password']);
 
         if (!$token = auth('api')->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return ApiResponse::error('Unauthorized', 401);
         }
 
         return $this->respondWithToken($token);
@@ -110,11 +118,10 @@ class AuthController extends Controller
      *     @OA\Response(response="401", description="Unauthorized")
      * )
      */
-    public function logout()
+    public function logout(): JsonResponse
     {
         auth('api')->logout();
-
-        return response()->json(['message' => 'Successfully logged out']);
+        return ApiResponse::success(null, 'Successfully logged out');
     }
 
     /**
@@ -126,16 +133,17 @@ class AuthController extends Controller
      *     @OA\Response(response="401", description="Unauthorized")
      * )
      */
-    public function refresh()
+    public function refresh(): JsonResponse
     {
         $token = JWTAuth::getToken();
         $new_token = JWTAuth::refresh($token);
+
         return $this->respondWithToken($new_token);
     }
 
-    protected function respondWithToken($token)
+    protected function respondWithToken($token): JsonResponse
     {
-        return response()->json([
+        return ApiResponse::success([
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => JWTAuth::factory()->getTTL() * 60
@@ -151,10 +159,10 @@ class AuthController extends Controller
      *     security={{"bearerAuth": {}}}
      * )
      */
-    public function getUserDetails()
+    public function getUserDetails(): JsonResponse
     {
         $user = request()->user();
 
-        return response()->json(['user' => $user], 200);
+        return ApiResponse::success($user, 'User details retrieved successfully');
     }
 }
