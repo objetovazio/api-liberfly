@@ -27,6 +27,6 @@ class ApiResponse
             'success' => false,
             'message' => 'Validation errors',
             'errors' => $errors
-        ], 422);
+        ], 400);
     }
 }
