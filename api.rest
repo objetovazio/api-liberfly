@@ -1,0 +1,104 @@
+@name = John Doe
+@email = johndoe3@example.com
+@password = securepassword123!
+
+### User Creation
+# @name create_user
+POST http://localhost:8000/api/auth/create
+Content-Type: application/json
+
+{
+    "name": "{{name}}",
+    "email": "{{email}}",
+    "password": "{{password}}",
+    "password_confirmation": "{{password}}"
+}
+
+###
+### Authentication
+# @name auth
+POST http://localhost:8000/api/auth
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+### Load Token
+@token = {{auth.response.body.access_token}}
+
+###
+### Create a new TodoList
+POST http://localhost:8000/api/todo
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "name": "My First Todo List"
+}
+
+###
+### Get all TodoLists
+GET http://localhost:8000/api/todo
+Authorization: Bearer {{token}}
+
+###
+### Get a specific TodoList
+GET http://localhost:8000/api/todo/1
+Authorization: Bearer {{token}}
+
+###
+### Update a specific TodoList
+PUT http://localhost:8000/api/todo/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "name": "Updated Todo List Name"
+}
+
+###
+### Delete a specific TodoList
+DELETE http://localhost:8000/api/todo/1
+Authorization: Bearer {{token}}
+
+###
+### Create a new Task in a specific TodoList
+POST http://localhost:8000/api/todo/1/tasks
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "title": "My First Task",
+    "description": "This is the description of my first task."
+}
+
+###
+### Get all Tasks from a specific TodoList
+GET http://localhost:8000/api/todo/1/tasks
+Authorization: Bearer {{token}}
+
+###
+### Get a specific Task from a specific TodoList
+GET http://localhost:8000/api/todo/1/tasks/1
+Authorization: Bearer {{token}}
+
+###
+### Update a specific Task in a specific TodoList
+PUT http://localhost:8000/api/todo/1/tasks/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "title": "Updated Task Title",
+    "description": "This is the updated description of my first task."
+}
+
+###
+### Delete a specific Task from a specific TodoList
+DELETE http://localhost:8000/api/todo/1/tasks/1
+Authorization: Bearer {{token}}
+
+###
+GET http://localhost:8000/api/test
