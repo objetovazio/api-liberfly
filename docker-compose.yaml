@@ -1,0 +1,27 @@
+services:
+  db:
+    image: mysql:latest
+    container_name: db
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: api_liberfly
+      MYSQL_USER: api_liberfly
+      MYSQL_PASSWORD: api_liberfly
+      MYSQL_ROOT_PASSWORD: root
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    networks:
+      - liberfly-network
+    volumes:
+      - mysql-volume:/var/lib/mysql
+
+networks:
+  liberfly-network:
+    driver: bridge
+
+volumes:
+  mysql-volume:
+    driver: local
