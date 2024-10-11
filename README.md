@@ -251,3 +251,7 @@ Using either of these methods allows you to thoroughly test the API endpoints an
 ## Security
 
 All endpoints (except for registering and logging in) are protected by JWT-based authentication. You must provide a valid token in the `Authorization` header to access these endpoints.
+
+# Future Improvements
+
+I believe I have met the necessary objectives to fulfill the proposed challenge by developing a robust API for task management, utilizing best programming practices and a Test Driven Development (TDD) approach. However, I see several opportunities for improvement in the project. Among the suggestions, I highlight the creation of custom exceptions for more specific and intuitive error handling, the implementation of custom validation rules to ensure data integrity, dockerization of the project for easier deployment and scalability, and the adoption of linting tools to maintain code quality. Additionally, including more comprehensive documentation and integration tests could contribute to a more solid and collaborative development process.
