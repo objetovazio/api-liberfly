@@ -58,9 +58,9 @@ class AuthControllerTest extends TestCase
         $response
             ->assertStatus(400)
             ->assertJsonStructure([
-                'name',
-                'email',
-                'password',
+                'success',
+                'message',
+                'errors',
             ], json_decode($response->getContent(), true));
     }
 

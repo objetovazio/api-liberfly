@@ -100,7 +100,7 @@ class TodoListRepositoryTest extends TestCase
         TodoList::factory()->create(['user_id' => $user->id, 'name' => 'Lista 2']);
 
         // Recupera todas as listas de tarefas usando o repositório
-        $todoLists = $this->todoListRepository->all();
+        $todoLists = $this->todoListRepository->getAllByUserId($user->id);
 
         // Verifica se duas listas de tarefas foram recuperadas
         $this->assertCount(2, $todoLists);

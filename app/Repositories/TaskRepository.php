@@ -19,7 +19,7 @@ class TaskRepository
      */
     public function create(array $data)
     {
-        $data =Task::create($data); 
+        $data = Task::create($data);
         return $data;
     }
 

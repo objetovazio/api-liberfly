@@ -57,7 +57,7 @@ class TaskRepositoryTest extends TestCase
         });
 
         // Chama o método all do repositório para obter todas as tarefas
-        $tasks = $this->taskRepository->all();
+        $tasks = $this->taskRepository->getAll();
 
         // Verifica se o número de tarefas retornadas é igual a 3
         $this->assertCount(3, $tasks);
@@ -71,7 +71,7 @@ class TaskRepositoryTest extends TestCase
         $task = Task::factory()->create(['todo_list_id' => $todoList->id]);
 
         // Chama o método find do repositório para encontrar a tarefa
-        $foundTask = $this->taskRepository->find($task->id);
+        $foundTask = $this->taskRepository->getById($task->id);
 
         // Verifica se a tarefa encontrada tem o mesmo ID da tarefa criada
         $this->assertEquals($task->id, $foundTask->id);
@@ -111,7 +111,12 @@ class TaskRepositoryTest extends TestCase
 
         // Verifica se a tarefa foi deletada com sucesso
         $this->assertTrue(boolval($deleted));
+        
+        
+         // Espera que a exceção seja lançada
+         $this->expectException(\Illuminate\Database\Eloquent\ModelNotFoundException::class);$this->expectException(\Illuminate\Database\Eloquent\ModelNotFoundException::class);
+         
         // Verifica se a tarefa não existe mais no banco de dados
-        $this->assertNull($this->taskRepository->find($task->id));
+        $this->assertNull($this->taskRepository->getById($task->id));
     }
 }
