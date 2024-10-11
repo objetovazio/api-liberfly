@@ -64,7 +64,7 @@ composer install
 
 ## 6. Start Docker Compose
 
-To start the database and other services, use the following command:
+To start the database use the following command:
 
 ```bash
 docker-compose up --build -d
@@ -88,8 +88,7 @@ php artisan serve
 
 ---
 
-Now you should have the API LiberFly project running locally! If you need anything else, feel free to ask.
-
+Now you should have the API LiberFly project running locally!
 
 ## Endpoints And Testing
 
@@ -100,9 +99,6 @@ You can test the API endpoints using the Swagger documentation available at the 
 This documentation provides a user-friendly interface to interact with the API, making it easy to send requests and view responses.
 
 Alternatively, you can use the REST Client plugin in Visual Studio Code. To do this, open the `api.rest` file in your project. This file contains a collection of predefined API requests that you can execute directly within the editor.
-
-Using either of these methods allows you to thoroughly test the API endpoints and ensure they are functioning as expected.
-
 
 ### Authentication
 
