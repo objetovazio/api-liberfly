@@ -23,6 +23,7 @@ class TodoListController extends Controller
      *     summary="Get all todo lists",
      *     tags={"Todo Lists"},
      *     @OA\Response(response="200", description="Success"),
+     *     security={{"bearerAuth": {}}}
      * )
      */
     public function index(): JsonResponse
@@ -31,7 +32,7 @@ class TodoListController extends Controller
         $userId = request()->user()->id;
 
         $todoLists = $this->todoListService->getAllByUserId($userId);
-        return ApiResponse::success($todoLists, "TodoList listed Sucessfully");
+        return ApiResponse::success($todoLists, "TodoList listed Successfully");
     }
 
     /**
@@ -40,14 +41,15 @@ class TodoListController extends Controller
      *     summary="Create a new todo list",
      *     tags={"Todo Lists"},
      *     @OA\Parameter(
-     *         name="title",
+     *         name="name",
      *         in="query",
      *         description="Title of the todo list",
      *         required=true,
      *         @OA\Schema(type="string")
      *     ),
      *     @OA\Response(response="201", description="Todo list created successfully"),
-     *     @OA\Response(response="400", description="Validation errors")
+     *     @OA\Response(response="400", description="Validation errors"),
+     *     security={{"bearerAuth": {}}}
      * )
      */
     public function store(Request $request): JsonResponse
@@ -64,7 +66,7 @@ class TodoListController extends Controller
         }
 
         // Adicionar o ID do usuário ao request
-        $requestData = array_merge($request->all(), ['user_id' => $request->user()->id]);
+        $requestData = array_merge($request->all(), ['user_id' => $userId]);
 
         $todoList = $this->todoListService->create($requestData);
         return ApiResponse::success($todoList, 'Todo list created successfully', 201);
@@ -82,7 +84,8 @@ class TodoListController extends Controller
      *         @OA\Schema(type="string")
      *     ),
      *     @OA\Response(response="200", description="Success"),
-     *     @OA\Response(response="404", description="Todo list not found")
+     *     @OA\Response(response="404", description="Todo list not found"),
+     *     security={{"bearerAuth": {}}}
      * )
      */
     public function show(string $id): JsonResponse
@@ -90,8 +93,7 @@ class TodoListController extends Controller
         $userId = request()->user()->id;
 
         // Validação do ID para verificar se existe
-        $validator = Validator::make(
-            ['id' => $id],
+        $validator = Validator::make(["id" => $id],
             ['id' => 'required|exists:todo_lists,id,user_id,' . $userId]
         );
 
@@ -123,18 +125,26 @@ class TodoListController extends Controller
      *     ),
      *     @OA\Response(response="200", description="Todo list updated successfully"),
      *     @OA\Response(response="404", description="Todo list not found"),
-     *     @OA\Response(response="400", description="Validation errors")
+     *     @OA\Response(response="400", description="Validation errors"),
+     *     security={{"bearerAuth": {}}}
      * )
      */
     public function update(Request $request, string $id): JsonResponse
     {
-        // Validação dos dados
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255|unique:todo_lists,name,user_id',
+        $userId = $request->user()->id;
+
+        // Obtenha todos os dados da requisição
+        $requestData = $request->all();
+        $requestData['id'] = $id;
+
+        // Validação do ID para verificar se existe
+        $validator = Validator::make($requestData, [
+            'id' => 'required|exists:todo_lists,id,user_id,' . $userId, // Verifica se o todo_list pertence ao usuário
+            'name' => 'required|string|max:255|unique:todo_lists,name,' . $id . ',id,user_id,' . $userId,
         ]);
 
         if ($validator->fails()) {
-            return ApiResponse::validationError($validator->errors());
+            return ApiResponse::error($validator->errors()); // Retorna erro se a validação falhar
         }
 
         $todoList = $this->todoListService->update($id, $request->all());
@@ -153,14 +163,17 @@ class TodoListController extends Controller
      *         @OA\Schema(type="string")
      *     ),
      *     @OA\Response(response="200", description="Todo list deleted successfully"),
-     *     @OA\Response(response="404", description="Todo list not found")
+     *     @OA\Response(response="404", description="Todo list not found"),
+     *     security={{"bearerAuth": {}}}
      * )
      */
     public function destroy(string $id): JsonResponse
     {
+        $userId = request()->user()->id;
+
         // Validação do ID para verificar se existe
         $validator = Validator::make(['id' => $id], [
-            'id' => 'required|exists:todo_lists,id', // Valida se o ID existe na tabela todo_lists
+            'id' => 'required|exists:todo_lists,id,user_id,' . $userId, // Valida se o ID existe na tabela todo_lists e pertence ao usuário
         ]);
 
         if ($validator->fails()) {

@@ -58,18 +58,19 @@ class AuthController extends Controller
      */
     public function create(): JsonResponse
     {
-        // Validação dos dados
+        // Validação dos dados de registro do usuário.
         $validator = Validator::make(request()->all(), [
             'name' => 'required',
             'email' => 'required|email|unique:users',
             'password' => 'required|confirmed|min:8',
         ]);
 
+        // Se a validação falhar, retorna os erros de validação.
         if ($validator->fails()) {
             return ApiResponse::validationError($validator->errors());
         }
 
-        // Chama o serviço para criar o usuário
+        // Chama o serviço para criar o usuário.
         $user = $this->authService->create(request()->all());
         return ApiResponse::success($user, 'User registered successfully', 201);
     }
@@ -99,12 +100,15 @@ class AuthController extends Controller
      */
     public function login(): JsonResponse
     {
+        // Recupera as credenciais do usuário.
         $credentials = request(['email', 'password']);
 
+        // Tenta autenticar o usuário.
         if (!$token = auth('api')->attempt($credentials)) {
             return ApiResponse::error('Unauthorized', 401);
         }
 
+        // Retorna o token de acesso.
         return $this->respondWithToken($token);
     }
 
@@ -119,6 +123,7 @@ class AuthController extends Controller
      */
     public function logout(): JsonResponse
     {
+        // Logout do usuário autenticado.
         auth('api')->logout();
         return ApiResponse::success(null, 'Successfully logged out');
     }
@@ -134,14 +139,17 @@ class AuthController extends Controller
      */
     public function refresh(): JsonResponse
     {
+        // Obtém o token atual e gera um novo.
         $token = JWTAuth::getToken();
         $new_token = JWTAuth::refresh($token);
 
+        // Retorna o novo token de acesso.
         return $this->respondWithToken($new_token);
     }
 
     protected function respondWithToken($token): JsonResponse
     {
+        // Retorna a resposta com o token de acesso.
         return ApiResponse::success([
             'access_token' => $token,
             'token_type' => 'bearer',
@@ -160,6 +168,7 @@ class AuthController extends Controller
      */
     public function getUserDetails(): JsonResponse
     {
+        // Recupera os detalhes do usuário autenticado.
         $user = request()->user();
 
         return ApiResponse::success($user, 'User details retrieved successfully');
